@@ -8,9 +8,7 @@ const getContext = () => {
   return audioCtx
 }
 
-export const playBeep = (duration = 0.15, frequency = 880) => {
-  const ctx = getContext()
-  if (!ctx) return
+const startTone = (ctx: AudioContext, duration: number, frequency: number) => {
   const oscillator = ctx.createOscillator()
   const gain = ctx.createGain()
   oscillator.type = 'sine'
@@ -21,4 +19,43 @@ export const playBeep = (duration = 0.15, frequency = 880) => {
   gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration)
   oscillator.start()
   oscillator.stop(ctx.currentTime + duration)
+}
+
+const playFallback = () => {
+  if (typeof Audio === 'undefined') return
+  const audio = new Audio(
+    // 0.12s 880Hz beep
+    'data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEARKwAABCxAgAEABAAZGF0YVQAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA='
+  )
+  audio.play().catch(() => {})
+}
+
+export const playBeep = (duration = 0.15, frequency = 880) => {
+  const ctx = getContext()
+  if (!ctx) {
+    playFallback()
+    return
+  }
+
+  const trigger = () => startTone(ctx, duration, frequency)
+
+  if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+    ctx.resume().then(trigger).catch(() => {
+      playFallback()
+    })
+  } else {
+    trigger()
+  }
+}
+
+// try to keep context active when返回前台
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      const ctx = getContext()
+      if (ctx?.state === 'suspended') {
+        ctx.resume().catch(() => {})
+      }
+    }
+  })
 }
