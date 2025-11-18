@@ -79,6 +79,19 @@ const HomePage = () => {
     setTimeout(() => setToast(null), 2000)
   }
 
+  const handleDeletePlan = (plan: WorkoutPlan) => {
+    const confirmed = window.confirm(`确定删除训练计划「${plan.name}」吗？`)
+    if (!confirmed) return
+    const nextPlans = plans.filter((p) => p.id !== plan.id)
+    setPlans(nextPlans)
+    savePlans(nextPlans)
+    if (selectedPlan?.id === plan.id) {
+      setSelectedPlan(null)
+    }
+    setToast('计划已删除')
+    setTimeout(() => setToast(null), 2000)
+  }
+
   const handleStartPlan = (planId: string) => {
     setSelectedPlan(null)
     navigate(`/live/${planId}`)
@@ -146,6 +159,7 @@ const HomePage = () => {
             plan={plan}
             onView={setSelectedPlan}
             onShare={handleShare}
+            onDelete={handleDeletePlan}
           />
         ))}
         {!plans.length && (

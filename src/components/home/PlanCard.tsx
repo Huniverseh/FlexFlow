@@ -5,9 +5,10 @@ type Props = {
   plan: WorkoutPlan
   onView: (plan: WorkoutPlan) => void
   onShare: (plan: WorkoutPlan) => void
+  onDelete: (plan: WorkoutPlan) => void
 }
 
-const PlanCard = ({ plan, onView, onShare }: Props) => {
+const PlanCard = ({ plan, onView, onShare, onDelete }: Props) => {
   const minutes = estimatePlanMinutes(plan)
 
   return (
@@ -17,16 +18,28 @@ const PlanCard = ({ plan, onView, onShare }: Props) => {
     >
       <div className="flex items-start justify-between">
         <p className="text-lg font-bold text-text-primary-light">{plan.name}</p>
-        <span
-          onClick={(e) => {
-            e.stopPropagation()
-            onShare(plan)
-          }}
-          className="cursor-pointer text-primary transition hover:scale-110"
-          aria-label="分享"
-        >
-          <span className="material-symbols-outlined">ios_share</span>
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            onClick={(e) => {
+              e.stopPropagation()
+              onShare(plan)
+            }}
+            className="cursor-pointer rounded-full p-1 text-primary transition hover:bg-primary/10 hover:scale-105"
+            aria-label="分享"
+          >
+            <span className="material-symbols-outlined">ios_share</span>
+          </span>
+          <span
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete(plan)
+            }}
+            className="cursor-pointer rounded-full p-1 text-red-500 transition hover:bg-red-50 hover:scale-105"
+            aria-label="删除计划"
+          >
+            <span className="material-symbols-outlined">delete</span>
+          </span>
+        </div>
       </div>
       <div className="flex flex-col gap-2 text-sm text-text-secondary-light">
         <div className="flex items-center gap-2">
