@@ -13,6 +13,12 @@ import {
   savePlans,
   saveRecords,
 } from '../utils/storage'
+import {
+  getNotificationPermission,
+  requestNotificationPermission,
+  sendNotification,
+  type NotificationPermissionState,
+} from '../utils/notification'
 import { playBeep } from '../utils/sound'
 
 type Status = 'work' | 'rest' | 'finished'
@@ -57,6 +63,8 @@ const LiveTrainingPage = () => {
   const [restDeadline, setRestDeadline] = useState<number | null>(null)
   const [showConfirm, setShowConfirm] = useState(false)
   const [recordSaved, setRecordSaved] = useState(false)
+  const [notificationPermission, setNotificationPermission] =
+    useState<NotificationPermissionState>(getNotificationPermission())
 
   const actionsById = useMemo(() => {
     return actions.reduce<Record<string, Action>>((map, act) => {
@@ -91,13 +99,17 @@ const LiveTrainingPage = () => {
       setRestRemaining(next)
       if (next <= 0 && !showConfirm) {
         playBeep()
+        if (notificationPermission === 'granted') {
+          const currentName = currentAction?.name ?? '当前动作'
+          sendNotification('休息结束', { body: `准备好！下一组：${currentName}` })
+        }
         setShowConfirm(true)
       }
     }
     tick()
     const id = window.setInterval(tick, 500)
     return () => window.clearInterval(id)
-  }, [restDeadline, showConfirm, status])
+  }, [currentAction?.name, notificationPermission, restDeadline, showConfirm, status])
 
   const handleCompleteSet = () => {
     if (!currentStep || !plan) return
@@ -138,6 +150,9 @@ const LiveTrainingPage = () => {
     }
     saveRecords([newRecord, ...records])
     setRecordSaved(true)
+    if (notificationPermission === 'granted') {
+      sendNotification('训练完成', { body: `${plan.name} 已完成，辛苦啦！` })
+    }
     playBeep()
   }
 
@@ -195,6 +210,21 @@ const LiveTrainingPage = () => {
           <p className="text-3xl font-bold leading-tight">{currentAction?.name ?? '未知动作'}</p>
           <p className="text-lg text-text-secondary-light">{currentStep?.weight ?? '—'}</p>
         </div>
+
+        {notificationPermission !== 'granted' && notificationPermission !== 'unsupported' && (
+          <div className="mt-3 flex items-center justify-center">
+            <button
+              onClick={async () => {
+                const perm = await requestNotificationPermission()
+                setNotificationPermission(perm)
+              }}
+              className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-2 text-xs font-semibold text-primary"
+            >
+              <span className="material-symbols-outlined text-base">notifications_active</span>
+              开启系统提醒，后台也可收到提示
+            </button>
+          </div>
+        )}
 
         <div className="mt-8 flex flex-1 flex-col items-center justify-center gap-8">
           <div className="w-full max-w-md overflow-hidden rounded-2xl bg-gray-50 shadow-inner">
