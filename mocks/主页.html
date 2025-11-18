@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FlexFlow - 我的训练计划</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#ff9500",
+            "background-light": "#f5f5f7",
+            "background-dark": "#231b0f",
+            "text-primary-light": "#333333",
+            "text-secondary-light": "#888888",
+          },
+          fontFamily: {
+            "display": ["Lexend", "Noto Sans SC", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+<div class="flex-1 pb-24">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center p-4">
+<h1 class="text-xl font-bold text-text-primary-light dark:text-white flex-1">我的训练计划</h1>
+<div class="flex items-center justify-end gap-2">
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-transparent text-primary">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-transparent text-primary">
+<span class="material-symbols-outlined text-3xl">more_horiz</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content: Workout Plan Cards -->
+<main class="flex flex-col gap-4 p-4">
+<!-- Card 1 -->
+<div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-zinc-800 p-4 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex items-start justify-between">
+<p class="text-lg font-bold text-text-primary-light dark:text-white">周一胸部强化训练</p>
+<div class="text-primary">
+<span class="material-symbols-outlined">ios_share</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-text-secondary-light dark:text-zinc-400">
+<span class="material-symbols-outlined text-base">list_alt</span>
+<p>包含动作：5个</p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-secondary-light dark:text-zinc-400">
+<span class="material-symbols-outlined text-base">timer</span>
+<p>预计时长：约60分钟</p>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-zinc-800 p-4 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex items-start justify-between">
+<p class="text-lg font-bold text-text-primary-light dark:text-white">周三腿部与核心</p>
+<div class="text-primary">
+<span class="material-symbols-outlined">ios_share</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-text-secondary-light dark:text-zinc-400">
+<span class="material-symbols-outlined text-base">list_alt</span>
+<p>包含动作：8个</p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-secondary-light dark:text-zinc-400">
+<span class="material-symbols-outlined text-base">timer</span>
+<p>预计时长：约75分钟</p>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-zinc-800 p-4 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex items-start justify-between">
+<p class="text-lg font-bold text-text-primary-light dark:text-white">周五全身循环</p>
+<div class="text-primary">
+<span class="material-symbols-outlined">ios_share</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-text-secondary-light dark:text-zinc-400">
+<span class="material-symbols-outlined text-base">list_alt</span>
+<p>包含动作：10个</p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-secondary-light dark:text-zinc-400">
+<span class="material-symbols-outlined text-base">timer</span>
+<p>预计时长：约45分钟</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 z-10 border-t border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+<div class="flex h-16">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-xs font-medium">主页</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-text-secondary-light dark:text-zinc-400" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<p class="text-xs font-medium">记录</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-text-secondary-light dark:text-zinc-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-xs font-medium">我的</p>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

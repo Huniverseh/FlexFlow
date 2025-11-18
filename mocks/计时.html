@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Workout Tracker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#00bfff",
+              "background-light": "#f5f8f8",
+              "background-dark": "#121212",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display">
+<div class="relative flex h-screen w-full flex-col bg-background-light group/design-root overflow-hidden">
+<div class="flex flex-1 flex-col p-6">
+<div class="flex w-full flex-col items-center gap-2 relative">
+<button class="absolute left-0 top-1 text-gray-800 text-3xl font-light leading-none">&lt;</button>
+<div class="flex flex-col items-center">
+<p class="text-gray-900 text-4xl font-bold leading-tight">杠铃卧推</p>
+<p class="text-gray-500 text-xl font-normal leading-normal">50 公斤</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center my-6">
+<div class="w-full max-w-xs aspect-[4/3] bg-gray-300 rounded-lg mb-6 overflow-hidden">
+<img alt="Fitness demonstration image" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjRJWsY05JT57ov5SMfDK2CHLEprvO_b0RyFrUEnF1Zv-NNfFn2lv-4PzvpzTxtZSYrzSiCRIxlOzHOZO0skGd9uC2mUbuFCMQB3IlPtgdIzMcT3EaW90L6FsIHg8mvGY8vObOc5g5apbkMWS19V5UIzSb1sZkHBBBaaLSrt-mkSRbWBOhGT7VLAvA2ArYbCDTBIJJzOjuZc8IyUM9lbznaMJB3w-vXpuQeCQrtTYTI2zSx6tAFKPE0FPq55_-01CvRJk9NqoUZkNE"/>
+</div>
+<div class="flex flex-col items-center justify-center gap-4">
+<p class="text-gray-500 text-lg font-normal leading-normal">第 2 / 4 组</p>
+<div class="relative flex h-48 w-48 items-center justify-center">
+<svg class="absolute inset-0 h-full w-full" viewBox="0 0 100 100">
+<circle class="stroke-current text-gray-300" cx="50" cy="50" fill="transparent" r="48" stroke-width="4"></circle>
+<circle class="stroke-current text-orange-500" cx="50" cy="50" fill="transparent" r="48" stroke-dasharray="301.59" stroke-dashoffset="75.4" stroke-linecap="round" stroke-width="4" style="transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>
+</svg>
+<div class="flex flex-col items-center">
+<p class="text-5xl font-black leading-none tracking-tighter text-orange-500">03:48</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex w-full flex-col items-center justify-center">
+<p class="text-gray-500 text-lg font-normal leading-normal text-center">下一项: 双杠臂屈伸 (自重)</p>
+</div>
+</div>
+</div>
+</body></html>
