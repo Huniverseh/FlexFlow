@@ -8,23 +8,34 @@ type Props = {
   actionsById: Record<string, Action | undefined>
   onClose: () => void
   onStart: (planId: string) => void
+  onEdit?: (planId: string) => void
 }
 
-const PlanDetailModal = ({ open, plan, actionsById, onClose, onStart }: Props) => {
+const PlanDetailModal = ({ open, plan, actionsById, onClose, onStart, onEdit }: Props) => {
   if (!open || !plan) return null
-  const minutes = estimatePlanMinutes(plan, actionsById)
+  const minutes = estimatePlanMinutes(plan)
 
   return (
     <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 px-4 pb-6">
       <div className="w-full max-w-screen-md translate-y-0 rounded-2xl bg-white p-4 shadow-xl">
         <div className="flex items-center justify-between">
           <p className="text-lg font-bold text-text-primary-light">{plan.name}</p>
-          <button
-            onClick={onClose}
-            className="rounded-full p-1 text-text-secondary-light transition hover:bg-gray-100"
-          >
-            <span className="material-symbols-outlined">close</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {onEdit && (
+              <button
+                onClick={() => onEdit(plan.id)}
+                className="rounded-full px-3 py-1 text-sm font-semibold text-primary transition hover:bg-primary/10"
+              >
+                编辑
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="rounded-full p-1 text-text-secondary-light transition hover:bg-gray-100"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
         </div>
         <div className="mt-1 flex items-center gap-3 text-sm text-text-secondary-light">
           <div className="flex items-center gap-1.5">

@@ -1,11 +1,22 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
 import HomePage from './pages/HomePage'
-import LiveTrainingPlaceholder from './pages/LiveTrainingPlaceholder'
+import LiveTrainingPage from './pages/LiveTrainingPage'
+import ImportLandingPage from './pages/ImportLandingPage'
 import NotFoundPage from './pages/NotFoundPage'
-import PlanEditorPlaceholder from './pages/PlanEditorPlaceholder'
+import PlanEditorPage from './pages/PlanEditorPage'
 import ProfilePage from './pages/ProfilePage'
 import RecordsPage from './pages/RecordsPage'
+
+const PlanEditorRoute = () => {
+  const { planId } = useParams()
+  return <PlanEditorPage key={planId ?? 'new'} />
+}
+
+const LiveTrainingRoute = () => {
+  const { planId } = useParams()
+  return <LiveTrainingPage key={planId ?? 'live'} />
+}
 
 function App() {
   return (
@@ -15,8 +26,10 @@ function App() {
         <Route path="/records" element={<RecordsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
-        <Route path="/plan/new" element={<PlanEditorPlaceholder />} />
-        <Route path="/live/:planId" element={<LiveTrainingPlaceholder />} />
+        <Route path="/plan/new" element={<PlanEditorRoute />} />
+        <Route path="/plan/:planId" element={<PlanEditorRoute />} />
+        <Route path="/live/:planId" element={<LiveTrainingRoute />} />
+        <Route path="/import" element={<ImportLandingPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

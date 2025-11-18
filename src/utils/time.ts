@@ -1,9 +1,6 @@
-import type { Action, WorkoutPlan } from '../types/models'
+import type { WorkoutPlan } from '../types/models'
 
-export const estimatePlanMinutes = (
-  plan: WorkoutPlan,
-  _actionsById: Record<string, Action | undefined>
-): number => {
+export const estimatePlanMinutes = (plan: WorkoutPlan): number => {
   const perRepSeconds = 3
   const setupSecondsPerSet = 20
   const totalSeconds = plan.actions.reduce((sum, step) => {

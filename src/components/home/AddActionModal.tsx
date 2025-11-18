@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import type { Action } from '../../types/models'
 
@@ -13,14 +13,6 @@ const AddActionModal = ({ open, onClose, onSubmit }: Props) => {
   const [name, setName] = useState('')
   const [targetPart, setTargetPart] = useState('')
   const [imageURL, setImageURL] = useState('')
-
-  useEffect(() => {
-    if (open) {
-      setName('')
-      setTargetPart('')
-      setImageURL('')
-    }
-  }, [open])
 
   if (!open) return null
 

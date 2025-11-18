@@ -1,15 +1,14 @@
-import type { Action, WorkoutPlan } from '../../types/models'
+import type { WorkoutPlan } from '../../types/models'
 import { estimatePlanMinutes } from '../../utils/time'
 
 type Props = {
   plan: WorkoutPlan
-  actionsById: Record<string, Action | undefined>
   onView: (plan: WorkoutPlan) => void
   onShare: (plan: WorkoutPlan) => void
 }
 
-const PlanCard = ({ plan, actionsById, onView, onShare }: Props) => {
-  const minutes = estimatePlanMinutes(plan, actionsById)
+const PlanCard = ({ plan, onView, onShare }: Props) => {
+  const minutes = estimatePlanMinutes(plan)
 
   return (
     <button

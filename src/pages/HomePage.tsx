@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AddActionModal from '../components/home/AddActionModal'
 import ImportModal from '../components/home/ImportModal'
@@ -11,8 +11,22 @@ import { getActions, getPlans, saveActions, savePlans } from '../utils/storage'
 import { v4 as uuidv4 } from 'uuid'
 
 const HomePage = () => {
-  const [actions, setActions] = useState<Action[]>([])
-  const [plans, setPlans] = useState<WorkoutPlan[]>([])
+  const [actions, setActions] = useState<Action[]>(() => {
+    const stored = getActions()
+    if (!stored.length) {
+      saveActions(seedActions)
+      return seedActions
+    }
+    return stored
+  })
+  const [plans, setPlans] = useState<WorkoutPlan[]>(() => {
+    const stored = getPlans()
+    if (!stored.length) {
+      savePlans(seedPlans)
+      return seedPlans
+    }
+    return stored
+  })
   const [selectedPlan, setSelectedPlan] = useState<WorkoutPlan | null>(null)
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [showAddAction, setShowAddAction] = useState(false)
@@ -20,23 +34,6 @@ const HomePage = () => {
   const [toast, setToast] = useState<string | null>(null)
 
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const storedActions = getActions()
-    const storedPlans = getPlans()
-    if (!storedActions.length) {
-      saveActions(seedActions)
-      setActions(seedActions)
-    } else {
-      setActions(storedActions)
-    }
-    if (!storedPlans.length) {
-      savePlans(seedPlans)
-      setPlans(seedPlans)
-    } else {
-      setPlans(storedPlans)
-    }
-  }, [])
 
   const actionsById = useMemo(() => {
     return actions.reduce<Record<string, Action>>((map, act) => {
@@ -85,6 +82,11 @@ const HomePage = () => {
   const handleStartPlan = (planId: string) => {
     setSelectedPlan(null)
     navigate(`/live/${planId}`)
+  }
+
+  const handleEditPlan = (planId: string) => {
+    setSelectedPlan(null)
+    navigate(`/plan/${planId}`)
   }
 
   return (
@@ -142,7 +144,6 @@ const HomePage = () => {
           <PlanCard
             key={plan.id}
             plan={plan}
-            actionsById={actionsById}
             onView={setSelectedPlan}
             onShare={handleShare}
           />
@@ -160,9 +161,18 @@ const HomePage = () => {
         actionsById={actionsById}
         onClose={() => setSelectedPlan(null)}
         onStart={handleStartPlan}
+        onEdit={handleEditPlan}
       />
-      <AddActionModal open={showAddAction} onClose={() => setShowAddAction(false)} onSubmit={handleAddAction} />
-      <ImportModal open={showImport} onClose={() => setShowImport(false)} onImport={handleImport} />
+      {showAddAction && (
+        <AddActionModal
+          open={showAddAction}
+          onClose={() => setShowAddAction(false)}
+          onSubmit={handleAddAction}
+        />
+      )}
+      {showImport && (
+        <ImportModal open={showImport} onClose={() => setShowImport(false)} onImport={handleImport} />
+      )}
 
       <div
         className={clsx(
