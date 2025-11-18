@@ -49,13 +49,20 @@ export const savePlans = (plans: WorkoutPlan[]) => writeList(STORAGE_KEYS.plans,
 export const getRecords = (): WorkoutRecord[] => readList<WorkoutRecord>(STORAGE_KEYS.records)
 export const saveRecords = (records: WorkoutRecord[]) => writeList(STORAGE_KEYS.records, records)
 
-export const getProfile = (): UserProfile =>
-  safeParse<UserProfile>(readRaw(STORAGE_KEYS.profile), {
+export const getProfile = (): UserProfile => {
+  const parsed = safeParse<Partial<UserProfile>>(readRaw(STORAGE_KEYS.profile), {
     height: null,
     weight: null,
     bodyFat: null,
     theme: 'default' as ThemeStyle,
   })
+  return {
+    height: parsed.height ?? null,
+    weight: parsed.weight ?? null,
+    bodyFat: parsed.bodyFat ?? null,
+    theme: parsed.theme ?? 'default',
+  }
+}
 
 export const saveProfile = (profile: UserProfile) =>
   writeRaw(STORAGE_KEYS.profile, JSON.stringify(profile))

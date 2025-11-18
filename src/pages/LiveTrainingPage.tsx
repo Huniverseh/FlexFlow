@@ -74,7 +74,9 @@ const LiveTrainingPage = () => {
 
   useEffect(() => {
     const profile = getProfile()
-    document.documentElement.dataset.theme = profile.theme
+    if (profile?.theme) {
+      document.documentElement.dataset.theme = profile.theme
+    }
   }, [])
 
   useEffect(() => {
