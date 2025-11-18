@@ -133,7 +133,7 @@ const LiveTrainingPage = () => {
 
   if (!plan) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f5f8f8] p-6 text-center text-text-primary-light">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background-light p-6 text-center text-text-primary-light">
         <p className="text-lg font-semibold">未找到对应的训练计划</p>
         <button
           onClick={() => navigate('/')}
@@ -147,7 +147,7 @@ const LiveTrainingPage = () => {
 
   if (status === 'finished') {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f5f8f8] p-6 text-center text-text-primary-light">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background-light p-6 text-center text-text-primary-light">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-3xl text-primary">
           <span className="material-symbols-outlined">celebration</span>
         </div>
@@ -172,11 +172,11 @@ const LiveTrainingPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f5f8f8] text-text-primary-light">
+    <div className="flex min-h-screen flex-col bg-background-light text-text-primary-light">
       <div className="relative flex flex-1 flex-col px-5 pb-10 pt-8">
         <button
           onClick={() => navigate(-1)}
-          className="absolute left-3 top-8 rounded-full p-2 text-gray-800 transition hover:bg-black/5"
+          className="absolute left-3 top-8 rounded-full p-2 text-text-primary-light transition hover:bg-primary/5"
         >
           <span className="material-symbols-outlined text-3xl">arrow_back_ios_new</span>
         </button>
@@ -187,7 +187,7 @@ const LiveTrainingPage = () => {
         </div>
 
         <div className="mt-8 flex flex-1 flex-col items-center justify-center gap-8">
-          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-gray-200 shadow-inner">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-gray-50 shadow-inner">
             {currentAction?.imageURL ? (
               <img
                 src={currentAction.imageURL}
