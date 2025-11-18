@@ -28,9 +28,9 @@ function App() {
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/plan/new" element={<PlanEditorRoute />} />
         <Route path="/plan/:planId" element={<PlanEditorRoute />} />
-        <Route path="/live/:planId" element={<LiveTrainingRoute />} />
         <Route path="/import" element={<ImportLandingPage />} />
       </Route>
+      <Route path="/live/:planId" element={<LiveTrainingRoute />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )

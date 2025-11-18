@@ -4,10 +4,25 @@ import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid'
 import { seedActions, seedPlans } from '../data/seed'
 import type { Action, WorkoutPlan, WorkoutRecord } from '../types/models'
-import { getActions, getPlans, getRecords, saveActions, savePlans, saveRecords } from '../utils/storage'
+import {
+  getActions,
+  getPlans,
+  getProfile,
+  getRecords,
+  saveActions,
+  savePlans,
+  saveRecords,
+} from '../utils/storage'
 import { playBeep } from '../utils/sound'
 
 type Status = 'work' | 'rest' | 'finished'
+
+const formatSeconds = (value: number) => {
+  const safe = Math.max(0, Math.round(value))
+  const minutes = Math.floor(safe / 60)
+  const seconds = safe % 60
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
 
 const LiveTrainingPage = () => {
   const { planId } = useParams()
@@ -56,6 +71,11 @@ const LiveTrainingPage = () => {
 
   const isLastSet = currentStep ? currentSet >= currentStep.sets : false
   const isLastAction = plan ? actionIndex >= plan.actions.length - 1 : false
+
+  useEffect(() => {
+    const profile = getProfile()
+    document.documentElement.dataset.theme = profile.theme
+  }, [])
 
   useEffect(() => {
     if (status !== 'rest') return
@@ -113,11 +133,11 @@ const LiveTrainingPage = () => {
 
   if (!plan) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-3 p-4 text-center text-text-primary-light">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f5f8f8] p-6 text-center text-text-primary-light">
         <p className="text-lg font-semibold">未找到对应的训练计划</p>
         <button
           onClick={() => navigate('/')}
-          className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:opacity-90"
+          className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-card transition hover:opacity-90"
         >
           返回主页
         </button>
@@ -127,8 +147,10 @@ const LiveTrainingPage = () => {
 
   if (status === 'finished') {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 p-4 text-center text-text-primary-light">
-        <span className="material-symbols-outlined text-5xl text-primary">celebration</span>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f5f8f8] p-6 text-center text-text-primary-light">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-3xl text-primary">
+          <span className="material-symbols-outlined">celebration</span>
+        </div>
         <p className="text-2xl font-bold">恭喜完成训练！</p>
         <p className="text-sm text-text-secondary-light">记录已保存，可在“记录”页查看。</p>
         <div className="flex gap-3">
@@ -150,77 +172,73 @@ const LiveTrainingPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs text-text-secondary-light">训练计划</p>
-          <p className="text-lg font-bold text-text-primary-light">{plan.name}</p>
-        </div>
+    <div className="flex min-h-screen flex-col bg-[#f5f8f8] text-text-primary-light">
+      <div className="relative flex flex-1 flex-col px-5 pb-10 pt-8">
         <button
-          onClick={() => navigate('/')}
-          className="rounded-full p-2 text-text-secondary-light transition hover:bg-gray-100"
+          onClick={() => navigate(-1)}
+          className="absolute left-3 top-8 rounded-full p-2 text-gray-800 transition hover:bg-black/5"
         >
-          <span className="material-symbols-outlined">close</span>
+          <span className="material-symbols-outlined text-3xl">arrow_back_ios_new</span>
         </button>
-      </div>
 
-      <div className="rounded-2xl bg-white p-4 shadow-card">
-        <div className="flex items-center gap-4">
-          <div className="h-20 w-20 overflow-hidden rounded-2xl bg-gray-100">
+        <div className="mt-2 flex flex-col items-center gap-2">
+          <p className="text-3xl font-bold leading-tight">{currentAction?.name ?? '未知动作'}</p>
+          <p className="text-lg text-text-secondary-light">{currentStep?.weight ?? '—'}</p>
+        </div>
+
+        <div className="mt-8 flex flex-1 flex-col items-center justify-center gap-8">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-gray-200 shadow-inner">
             {currentAction?.imageURL ? (
-              <img src={currentAction.imageURL} alt={currentAction.name} className="h-full w-full object-cover" />
+              <img
+                src={currentAction.imageURL}
+                alt={currentAction.name}
+                className="h-full w-full object-cover"
+              />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm text-text-secondary-light">
+              <div className="flex aspect-[4/3] w-full items-center justify-center text-sm text-text-secondary-light">
                 无图
               </div>
             )}
           </div>
-          <div className="flex flex-1 flex-col gap-1">
-            <p className="text-xl font-bold text-text-primary-light">{currentAction?.name ?? '未知动作'}</p>
+
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-base text-text-secondary-light">
+              第 {currentSet} / {currentStep?.sets ?? 0} 组 · {currentStep?.reps} ·{' '}
+              {currentStep?.weight}
+            </p>
             <p className="text-sm text-text-secondary-light">
               目标部位：{currentAction?.targetPart ?? '—'}
             </p>
-            <p className="text-sm text-text-secondary-light">
-              {currentSet} / {currentStep?.sets ?? 0} 组 · {currentStep?.reps} · {currentStep?.weight}
-            </p>
           </div>
-        </div>
-      </div>
 
-      <div className="rounded-2xl bg-white p-4 shadow-card">
-        <p className="text-sm text-text-secondary-light">下一个动作</p>
-        <p className="text-lg font-semibold text-text-primary-light">
-          {nextAction ? nextAction.name : '完成训练'}
-        </p>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 rounded-2xl bg-white p-6 text-center shadow-card">
-        {status === 'work' && (
-          <>
-            <p className="text-sm text-text-secondary-light">当前状态</p>
-            <p className="text-2xl font-bold text-primary">执行中</p>
+          {status === 'work' ? (
             <button
               onClick={handleCompleteSet}
-              className="mt-4 flex h-16 w-full max-w-sm items-center justify-center rounded-full bg-primary text-lg font-semibold text-white shadow-lg transition hover:opacity-90"
+              className="mt-2 flex h-16 w-full max-w-sm items-center justify-center rounded-full bg-primary text-lg font-semibold text-white shadow-lg transition hover:opacity-90"
             >
               完成本组
             </button>
-          </>
-        )}
-
-        {status === 'rest' && (
-          <>
-            <p className="text-sm text-text-secondary-light">休息中</p>
-            <div className="relative flex h-40 w-40 items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-primary/10" />
-              <div className="absolute inset-3 rounded-full bg-primary/20" />
-              <div className="relative flex h-full w-full items-center justify-center rounded-full bg-white text-4xl font-bold text-primary shadow-inner">
-                {restRemaining}s
+          ) : (
+            <div className="flex flex-col items-center gap-3">
+              <div className="relative h-48 w-48">
+                <div className="absolute inset-0 rounded-full border-2 border-gray-200" />
+                <div className="absolute inset-3 rounded-full border-[10px] border-primary/30" />
+                <div className="relative flex h-full w-full items-center justify-center rounded-full bg-white shadow-inner">
+                  <p className="text-5xl font-black leading-none tracking-tight text-primary">
+                    {formatSeconds(restRemaining)}
+                  </p>
+                </div>
               </div>
+              <p className="text-sm text-text-secondary-light">倒计时归零将提示进入下一组</p>
             </div>
-            <p className="text-sm text-text-secondary-light">倒计时归零将提示进入下一组</p>
-          </>
-        )}
+          )}
+        </div>
+
+        <div className="flex flex-col items-center gap-1 text-center">
+          <p className="text-base text-text-secondary-light">
+            下一项：{nextAction ? `${nextAction.name} (${nextStep?.weight ?? '—'})` : '完成训练'}
+          </p>
+        </div>
       </div>
 
       {showConfirm && (

@@ -8,7 +8,11 @@ import { seedActions, seedPlans } from '../data/seed'
 import type { Action, WorkoutActionStep, WorkoutPlan } from '../types/models'
 import { getActions, getPlans, saveActions, savePlans } from '../utils/storage'
 
-type EditableStep = WorkoutActionStep & { uid: string }
+type EditableStep = Omit<WorkoutActionStep, 'sets' | 'restSeconds'> & {
+  uid: string
+  sets: number | ''
+  restSeconds: number | ''
+}
 
 const createDefaultStep = (actionId: string): EditableStep => ({
   uid: uuidv4(),
@@ -244,8 +248,10 @@ const PlanEditorPage = () => {
                     <input
                       type="number"
                       min={1}
-                      value={step.sets}
-                      onChange={(e) => updateStep(step.uid, { sets: Number(e.target.value) })}
+                      value={step.sets === '' ? '' : step.sets}
+                      onChange={(e) =>
+                        updateStep(step.uid, { sets: e.target.value === '' ? '' : Number(e.target.value) })
+                      }
                       className="rounded-xl border border-gray-200 bg-white px-3 py-2 focus:border-primary focus:ring-primary"
                     />
                   </label>
@@ -254,8 +260,12 @@ const PlanEditorPage = () => {
                     <input
                       type="number"
                       min={10}
-                      value={step.restSeconds}
-                      onChange={(e) => updateStep(step.uid, { restSeconds: Number(e.target.value) })}
+                      value={step.restSeconds === '' ? '' : step.restSeconds}
+                      onChange={(e) =>
+                        updateStep(step.uid, {
+                          restSeconds: e.target.value === '' ? '' : Number(e.target.value),
+                        })
+                      }
                       className="rounded-xl border border-gray-200 bg-white px-3 py-2 focus:border-primary focus:ring-primary"
                     />
                   </label>

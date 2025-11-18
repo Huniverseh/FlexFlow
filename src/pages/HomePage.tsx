@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AddActionModal from '../components/home/AddActionModal'
 import ImportModal from '../components/home/ImportModal'
@@ -34,6 +34,7 @@ const HomePage = () => {
   const [toast, setToast] = useState<string | null>(null)
 
   const navigate = useNavigate()
+  const addMenuRef = useRef<HTMLDivElement>(null)
 
   const actionsById = useMemo(() => {
     return actions.reduce<Record<string, Action>>((map, act) => {
@@ -102,11 +103,23 @@ const HomePage = () => {
     navigate(`/plan/${planId}`)
   }
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!showAddMenu) return
+      if (addMenuRef.current && !addMenuRef.current.contains(event.target as Node)) {
+        setShowAddMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showAddMenu])
+
   return (
     <div className="space-y-4 p-4">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-text-primary-light">我的训练计划</h1>
-        <div className="relative">
+        <div className="relative" ref={addMenuRef}>
           <div className="flex items-center justify-end gap-2">
             <button
               onClick={() => setShowAddMenu((v) => !v)}

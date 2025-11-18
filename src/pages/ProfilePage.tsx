@@ -1,14 +1,33 @@
-import { useState } from 'react'
-import type { UserProfile } from '../types/models'
+import { useEffect, useState } from 'react'
+import type { ThemeStyle, UserProfile } from '../types/models'
 import { getProfile, saveProfile } from '../utils/storage'
 
 const ProfilePage = () => {
-  const [profile, setProfile] = useState<UserProfile>(() => getProfile())
+  const initial = getProfile()
+  const [profile, setProfile] = useState<UserProfile>({
+    ...initial,
+    theme: initial.theme ?? 'default',
+  })
   const [toast, setToast] = useState<string | null>(null)
 
-  const handleChange = (key: keyof UserProfile, value: number | null) => {
+  const handleChange = (key: 'height' | 'weight' | 'bodyFat', value: number | null) => {
     setProfile((prev) => ({ ...prev, [key]: value }))
   }
+
+  const handleThemeChange = (value: ThemeStyle) => {
+    setProfile((prev) => ({ ...prev, theme: value }))
+  }
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = profile.theme
+  }, [profile.theme])
+
+  const themeOptions: { value: ThemeStyle; label: string; hint: string }[] = [
+    { value: 'default', label: '默认', hint: '简洁清爽，通用视觉' },
+    { value: 'fresh', label: '清新', hint: '薄荷绿点缀，轻盈通透' },
+    { value: 'calm', label: '沉稳', hint: '低饱和度，便于长时间使用' },
+    { value: 'dark', label: '暗色', hint: '夜间友好，降低眩光' },
+  ]
 
   const handleSave = () => {
     saveProfile(profile)
@@ -55,6 +74,29 @@ const ProfilePage = () => {
               placeholder="15"
             />
           </label>
+        </div>
+        <div className="space-y-2 rounded-xl bg-gray-50 p-3">
+          <p className="text-sm font-semibold text-text-primary-light">界面风格</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {themeOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleThemeChange(option.value)}
+                className={`flex flex-col items-start gap-1 rounded-xl border px-4 py-3 text-left transition ${
+                  profile.theme === option.value
+                    ? 'border-primary bg-primary/5 text-primary'
+                    : 'border-gray-200 bg-white text-text-primary-light hover:border-primary/50 hover:bg-primary/5'
+                }`}
+              >
+                <span className="text-sm font-semibold">{option.label}</span>
+                <span className="text-xs text-text-secondary-light">{option.hint}</span>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-text-secondary-light">
+            选择你喜欢的主题风格，未来版本会根据此偏好调整整体配色。
+          </p>
         </div>
         <button
           onClick={handleSave}

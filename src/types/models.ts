@@ -23,6 +23,7 @@ export type UserProfile = {
   height: number | null
   weight: number | null
   bodyFat: number | null
+  theme: ThemeStyle
 }
 
 export type WorkoutRecord = {
@@ -31,3 +32,5 @@ export type WorkoutRecord = {
   planName: string
   date: string
 }
+
+export type ThemeStyle = 'default' | 'fresh' | 'calm' | 'dark'
