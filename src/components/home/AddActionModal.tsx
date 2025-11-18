@@ -1,5 +1,5 @@
 import type { ChangeEvent, DragEvent, FormEvent } from 'react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import type { Action } from '../../types/models'
 
@@ -7,9 +7,10 @@ type Props = {
   open: boolean
   onClose: () => void
   onSubmit: (action: Action) => void
+  initialAction?: Action | null
 }
 
-const AddActionModal = ({ open, onClose, onSubmit }: Props) => {
+const AddActionModal = ({ open, onClose, onSubmit, initialAction }: Props) => {
   const [name, setName] = useState('')
   const [targetPart, setTargetPart] = useState('')
   const [imageData, setImageData] = useState<string | null>(null)
@@ -17,13 +18,19 @@ const AddActionModal = ({ open, onClose, onSubmit }: Props) => {
   const [imageError, setImageError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  if (!open) return null
+  useEffect(() => {
+    if (!open) return
+    setName(initialAction?.name ?? '')
+    setTargetPart(initialAction?.targetPart ?? '')
+    setImageData(initialAction?.imageURL ?? null)
+    setImageError(null)
+  }, [initialAction, open])
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
     const newAction: Action = {
-      id: uuidv4(),
+      id: initialAction?.id ?? uuidv4(),
       name: name.trim(),
       targetPart: targetPart.trim() || '未设定',
       imageURL: imageData ?? undefined,
@@ -56,6 +63,8 @@ const AddActionModal = ({ open, onClose, onSubmit }: Props) => {
     if (file) handleFile(file)
   }
 
+  if (!open) return null
+
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
       <form
@@ -63,7 +72,9 @@ const AddActionModal = ({ open, onClose, onSubmit }: Props) => {
         className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl"
       >
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-text-primary-light">添加新动作</h3>
+          <h3 className="text-lg font-semibold text-text-primary-light">
+            {initialAction ? '编辑动作' : '添加新动作'}
+          </h3>
           <button
             type="button"
             onClick={onClose}

@@ -54,6 +54,7 @@ const LiveTrainingPage = () => {
   const [currentSet, setCurrentSet] = useState(1)
   const [status, setStatus] = useState<Status>('work')
   const [restRemaining, setRestRemaining] = useState(0)
+  const [restDeadline, setRestDeadline] = useState<number | null>(null)
   const [showConfirm, setShowConfirm] = useState(false)
   const [recordSaved, setRecordSaved] = useState(false)
 
@@ -80,18 +81,23 @@ const LiveTrainingPage = () => {
   }, [])
 
   useEffect(() => {
-    if (status !== 'rest') return
-    if (restRemaining <= 0) return
-    const t = window.setTimeout(() => {
-      const next = restRemaining - 1
+    if (status !== 'rest' || !restDeadline) {
+      setRestRemaining(0)
+      return
+    }
+    const tick = () => {
+      const remainingMs = restDeadline - Date.now()
+      const next = Math.max(0, Math.ceil(remainingMs / 1000))
       setRestRemaining(next)
-      if (next <= 0) {
+      if (next <= 0 && !showConfirm) {
         playBeep()
         setShowConfirm(true)
       }
-    }, 1000)
-    return () => window.clearTimeout(t)
-  }, [restRemaining, status])
+    }
+    tick()
+    const id = window.setInterval(tick, 500)
+    return () => window.clearInterval(id)
+  }, [restDeadline, showConfirm, status])
 
   const handleCompleteSet = () => {
     if (!currentStep || !plan) return
@@ -102,6 +108,7 @@ const LiveTrainingPage = () => {
     }
     playBeep()
     setStatus('rest')
+    setRestDeadline(Date.now() + currentStep.restSeconds * 1000)
     setRestRemaining(currentStep.restSeconds)
   }
 
@@ -116,6 +123,7 @@ const LiveTrainingPage = () => {
     }
     setStatus('work')
     setRestRemaining(0)
+    setRestDeadline(null)
   }
 
   const finishPlan = () => {
@@ -255,7 +263,9 @@ const LiveTrainingPage = () => {
               <button
                 onClick={() => {
                   setShowConfirm(false)
-                  setRestRemaining((prev) => Math.max(prev, 10))
+                  const extraSeconds = Math.max(restRemaining || 0, 10)
+                  setRestDeadline(Date.now() + extraSeconds * 1000)
+                  setRestRemaining(extraSeconds)
                   setStatus('rest')
                 }}
                 className="flex-1 rounded-full border border-gray-200 py-3 text-sm font-semibold text-text-primary-light transition hover:bg-gray-50"

@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AddActionModal from '../components/home/AddActionModal'
+import ActionLibraryModal from '../components/home/ActionLibraryModal'
 import ImportModal from '../components/home/ImportModal'
 import PlanCard from '../components/home/PlanCard'
 import PlanDetailModal from '../components/home/PlanDetailModal'
@@ -31,6 +32,8 @@ const HomePage = () => {
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [showAddAction, setShowAddAction] = useState(false)
   const [showImport, setShowImport] = useState(false)
+  const [showActionLibrary, setShowActionLibrary] = useState(false)
+  const [editingAction, setEditingAction] = useState<Action | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
   const navigate = useNavigate()
@@ -71,13 +74,28 @@ const HomePage = () => {
     setTimeout(() => setToast(null), 2000)
   }
 
-  const handleAddAction = (action: Action) => {
-    const next = [...actions, action]
+  const persistToast = (message: string, ms = 2000) => {
+    setToast(message)
+    setTimeout(() => setToast(null), ms)
+  }
+
+  const handleSaveAction = (action: Action) => {
+    const exists = actions.some((a) => a.id === action.id)
+    const next = exists ? actions.map((a) => (a.id === action.id ? action : a)) : [...actions, action]
     setActions(next)
     saveActions(next)
     setShowAddAction(false)
-    setToast('已添加新动作')
-    setTimeout(() => setToast(null), 2000)
+    setEditingAction(null)
+    persistToast(exists ? '动作已更新' : '已添加新动作')
+  }
+
+  const handleDeleteAction = (action: Action) => {
+    const confirmed = window.confirm(`确定删除动作「${action.name}」吗？`)
+    if (!confirmed) return
+    const next = actions.filter((a) => a.id !== action.id)
+    setActions(next)
+    saveActions(next)
+    persistToast('动作已删除')
   }
 
   const handleDeletePlan = (plan: WorkoutPlan) => {
@@ -156,6 +174,16 @@ const HomePage = () => {
                 <span className="material-symbols-outlined text-base text-primary">fitness_center</span>
                 添加新动作
               </button>
+              <button
+                onClick={() => {
+                  setShowAddMenu(false)
+                  setShowActionLibrary(true)
+                }}
+                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-text-primary-light transition hover:bg-gray-50"
+              >
+                <span className="material-symbols-outlined text-base text-primary">tune</span>
+                编辑动作库
+              </button>
             </div>
           )}
         </div>
@@ -194,7 +222,28 @@ const HomePage = () => {
         <AddActionModal
           open={showAddAction}
           onClose={() => setShowAddAction(false)}
-          onSubmit={handleAddAction}
+          onSubmit={handleSaveAction}
+          initialAction={null}
+        />
+      )}
+      {editingAction && (
+        <AddActionModal
+          open={Boolean(editingAction)}
+          onClose={() => setEditingAction(null)}
+          onSubmit={handleSaveAction}
+          initialAction={editingAction}
+        />
+      )}
+      {showActionLibrary && (
+        <ActionLibraryModal
+          open={showActionLibrary}
+          actions={actions}
+          onClose={() => setShowActionLibrary(false)}
+          onEdit={(action) => {
+            setShowActionLibrary(false)
+            setEditingAction(action)
+          }}
+          onDelete={handleDeleteAction}
         />
       )}
       {showImport && (
